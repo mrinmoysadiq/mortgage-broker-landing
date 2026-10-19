@@ -173,6 +173,8 @@ legend{font-weight:700;font-size:17px;margin-bottom:8px;padding:0}
 
 .shot{all:unset;display:block;cursor:zoom-in;margin-top:14px;border:2px solid var(--ink);border-radius:10px;overflow:hidden;background:var(--white)}
 .shot img{width:100%;height:auto}
+.shot.tall{position:relative;max-height:520px}
+.shot .more{position:absolute;left:0;right:0;bottom:0;padding:60px 0 12px;background:linear-gradient(rgba(247,249,253,0),#F7F9FD 70%);font-weight:700;font-size:15px;color:var(--ink);text-align:center}
 .shot:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .cap{font-size:13px!important;color:var(--muted)!important;margin-top:6px!important}
 .zoom{position:fixed;inset:0;z-index:50;background:rgba(16,18,31,.94);overflow:auto;-webkit-overflow-scrolling:touch}
@@ -273,14 +275,16 @@ footer a{color:var(--muted)}
   <h2>The Second Source System</h2>
   <ol class="steps">
     <li><h3>We run the ads</h3><p>To first-time home buyers and refinance borrowers in your area. Leads are only yours.</p>
-      <button type="button" class="shot" data-zoom><img src="img/img2.jpg" alt="Facebook Ads Manager results: 104 leads at $13.97, 46 booked appointments, $31.59 per appointment" loading="lazy"></button>
-      <p class="cap">Real ad account, last 30 days. Client details hidden.</p></li>
+      <button type="button" class="shot" data-zoom><img src="img/proof-ads-a.jpg" width="1600" height="401" alt="Facebook Ads Manager, client A, last 30 days: 109 leads at $13.54, 57 appointments scheduled, $25.89 per appointment" loading="lazy"></button>
+      <p class="cap">Client A, last 30 days: 109 leads, 57 booked appointments, $25.89 per appointment.</p>
+      <button type="button" class="shot" data-zoom><img src="img/proof-ads-b.jpg" width="1600" height="603" alt="Facebook Ads Manager, client B, last 30 days: refinance 224 leads and 52 appointments, purchase 146 leads and 41 appointments" loading="lazy"></button>
+      <p class="cap">Client B, last 30 days: 370 leads, 93 booked appointments. Client names hidden.</p></li>
     <li><h3>AI texts every lead in seconds</h3><p>Day or night. It qualifies them and follows up for weeks.</p>
-      <button type="button" class="shot" data-zoom><img src="img/img3.jpg" alt="Real AI text conversation from first text to booked call in 26 minutes" loading="lazy"></button>
-      <p class="cap">Real conversation. Lead details hidden.</p></li>
+      <button type="button" class="shot tall" data-zoom><img src="img/proof-chat.jpg" width="1058" height="4546" alt="Real text conversation: daily follow-up texts from Oct 12 to Oct 17, the lead replies yes, and a call is booked 20 minutes later" loading="lazy"><span class="more">Tap to read the full chat</span></button>
+      <p class="cap">Real lead. Follow-up texts went out every day for 6 days. He replied, and the call was booked 20 minutes later.</p></li>
     <li><h3>You show up and close</h3><p>Qualified borrowers book straight on your calendar.</p>
-      <button type="button" class="shot" data-zoom><img src="img/img4.jpg" alt="A client's calendar for October full of booked appointments" loading="lazy"></button>
-      <p class="cap">A client's calendar this month. Names hidden.</p></li>
+      <button type="button" class="shot" data-zoom><img src="img/proof-calendar.jpg" width="1600" height="1167" alt="Client B's calendar from Sep 28 to Oct 10 with more than 60 booked calls" loading="lazy"></button>
+      <p class="cap">Client B's calendar, Sep 28 to Oct 10: 60+ booked calls in 2 weeks. Last names shortened.</p></li>
   </ol>
   <p class="note"><b>Keep your referrals.</b> Every pre-approved buyer you send a realtor brings more deals back.</p>
 </section>
@@ -419,7 +423,9 @@ document.getElementById('playBtn').addEventListener('click', function(){
     btn.addEventListener('click', function(){
       var wrap = document.createElement('div'); wrap.className = 'zoom'; wrap.setAttribute('role','dialog'); wrap.setAttribute('aria-label','Full size image');
       wrap.innerHTML = '<span class="zoom-hint">Scroll to see more</span><button type="button" class="zoom-close" aria-label="Close">&times;</button>';
-      var img = btn.querySelector('img').cloneNode(); img.removeAttribute('loading'); wrap.appendChild(img);
+      var img = btn.querySelector('img').cloneNode(); img.removeAttribute('loading');
+      if (btn.classList.contains('tall')) { img.style.width = 'min(100vw, 640px)'; img.style.display = 'block'; img.style.margin = '60px auto 40px'; }
+      wrap.appendChild(img);
       function close(){ wrap.remove(); document.body.style.overflow=''; btn.focus(); }
       wrap.querySelector('.zoom-close').addEventListener('click', close);
       document.addEventListener('keydown', function esc(e){ if(e.key==='Escape'){ close(); document.removeEventListener('keydown', esc); } });
