@@ -453,18 +453,39 @@ var CONFIG = {
   VIDEO_EMBED_URL: "",
   // Self-hosted video file (plays at 1.5x speed by default)
   VIDEO_FILE: "vsl/vsl.mp4",
+  // Adaptive stream: picks 360p, 540p or 720p to match the viewer's internet speed
+  VIDEO_HLS: "vsl/hls/master.m3u8",
   VIDEO_SPEED: 1.5,
   // Google Apps Script Web app URL (ends with /exec). Leads go to your Google Sheet.
   FORM_WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbzilelGW9A-Gve9P71YAW8bchJdO9HHRsO5X2AiGjd7uxHTyHWqlrOGIOB0SozOyW6N/exec"
 };
 /* ================================== */
 
+/* Video player script for adaptive streaming, loaded early so play starts fast */
+var hlsState = 0, hlsWait = [];
+function loadHls(cb){
+  if (hlsState === 2) return cb(true);
+  if (hlsState === 3) return cb(false);
+  if (cb) hlsWait.push(cb);
+  if (hlsState === 1) return;
+  hlsState = 1;
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js'; s.async = true;
+  s.onload = function(){ hlsState = 2; hlsWait.splice(0).forEach(function(f){ f(true); }); };
+  s.onerror = function(){ hlsState = 3; hlsWait.splice(0).forEach(function(f){ f(false); }); };
+  document.head.appendChild(s);
+}
+window.addEventListener('load', function(){
+  var v = document.createElement('video');
+  if (!v.canPlayType('application/vnd.apple.mpegurl')) setTimeout(function(){ loadHls(); }, 1200);
+});
+
 /* Video: loads only when tapped */
 document.getElementById('playBtn').addEventListener('click', function(){
   var box = document.getElementById('video');
   if (CONFIG.VIDEO_FILE) {
     var v = document.createElement('video');
-    v.src = CONFIG.VIDEO_FILE; v.controls = true; v.playsInline = true; v.setAttribute('playsinline', '');
+    v.controls = true; v.playsInline = true; v.setAttribute('playsinline', '');
     v.poster = 'img/vsl-poster.jpg'; v.preload = 'auto';
     var speeds = [1, 1.5, 2], rate = CONFIG.VIDEO_SPEED, sp = document.createElement('button');
     sp.type = 'button'; sp.className = 'speed';
@@ -476,7 +497,19 @@ document.getElementById('playBtn').addEventListener('click', function(){
     v.addEventListener('ratechange', function(){ if (v.playbackRate !== rate) { rate = v.playbackRate; sp.textContent = 'Speed ' + rate + 'x'; } });
     v.addEventListener('ended', function(){ if (window.fbq) fbq('trackCustom', 'VSLComplete'); });
     box.innerHTML = ''; box.appendChild(v); box.appendChild(sp); setSpeed(CONFIG.VIDEO_SPEED);
-    var pr = v.play(); if (pr && pr.catch) pr.catch(function(){});
+    function go(){ setSpeed(rate); var pr = v.play(); if (pr && pr.catch) pr.catch(function(){}); }
+    if (CONFIG.VIDEO_HLS && v.canPlayType('application/vnd.apple.mpegurl')) {
+      v.src = CONFIG.VIDEO_HLS; go();                       // iPhone, iPad, Safari: built-in streaming
+    } else if (CONFIG.VIDEO_HLS) {
+      loadHls(function(ok){
+        if (ok && window.Hls && Hls.isSupported()) {
+          var hls = new Hls({ capLevelToPlayerSize: true, startLevel: -1, maxBufferLength: 30, maxMaxBufferLength: 60 });
+          hls.loadSource(CONFIG.VIDEO_HLS); hls.attachMedia(v);
+          hls.on(Hls.Events.MANIFEST_PARSED, go);
+          hls.on(Hls.Events.ERROR, function(e, d){ if (d.fatal) { hls.destroy(); v.src = CONFIG.VIDEO_FILE; go(); } });
+        } else { v.src = CONFIG.VIDEO_FILE; go(); }
+      });
+    } else { v.src = CONFIG.VIDEO_FILE; go(); }
     return;
   }
   if (!CONFIG.VIDEO_EMBED_URL) return;
