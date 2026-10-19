@@ -76,7 +76,7 @@ p{margin:0 0 12px}
 .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--ink)}
 .video #playBtn.poster{background:var(--ink) url("img/vsl-poster.jpg") center/cover no-repeat}
 .video #playBtn.poster:hover{filter:brightness(1.05)}
-.speed{position:absolute;top:10px;right:10px;z-index:2;border:0;border-radius:20px;padding:5px 11px;background:rgba(16,18,31,.8);color:#fff;font:700 13px var(--body);cursor:pointer}
+
 
 /* Buttons */
 .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:64px;padding:10px 16px;border:0;border-radius:10px;background:var(--lime);color:var(--ink);text-decoration:none;cursor:pointer;box-shadow:0 4px 0 var(--ink),0 0 0 2px var(--ink) inset;font-family:var(--display);font-stretch:110%;font-weight:900;font-size:21px;line-height:1.15}
@@ -450,71 +450,37 @@ footer a{color:var(--muted)}
 /* ===== SETTINGS: fill these in ===== */
 var CONFIG = {
   // Video embed link (YouTube, Vimeo, Wistia or Loom embed URL). Leave empty until the video is ready.
-  VIDEO_EMBED_URL: "",
-  // Self-hosted video file (plays at 1.5x speed by default)
-  VIDEO_FILE: "vsl/vsl.mp4",
-  // Adaptive stream: picks 360p, 540p or 720p to match the viewer's internet speed
-  VIDEO_HLS: "vsl/hls/master.m3u8",
+  // YouTube video ID (from https://youtu.be/xC19anByVVk). Starts at 1.5x speed.
+  YOUTUBE_ID: "xC19anByVVk",
   VIDEO_SPEED: 1.5,
   // Google Apps Script Web app URL (ends with /exec). Leads go to your Google Sheet.
   FORM_WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbzilelGW9A-Gve9P71YAW8bchJdO9HHRsO5X2AiGjd7uxHTyHWqlrOGIOB0SozOyW6N/exec"
 };
 /* ================================== */
 
-/* Video player script for adaptive streaming, loaded early so play starts fast */
-var hlsState = 0, hlsWait = [];
-function loadHls(cb){
-  if (hlsState === 2) return cb(true);
-  if (hlsState === 3) return cb(false);
-  if (cb) hlsWait.push(cb);
-  if (hlsState === 1) return;
-  hlsState = 1;
-  var s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js'; s.async = true;
-  s.onload = function(){ hlsState = 2; hlsWait.splice(0).forEach(function(f){ f(true); }); };
-  s.onerror = function(){ hlsState = 3; hlsWait.splice(0).forEach(function(f){ f(false); }); };
-  document.head.appendChild(s);
-}
-window.addEventListener('load', function(){
-  var v = document.createElement('video');
-  if (!v.canPlayType('application/vnd.apple.mpegurl')) setTimeout(function(){ loadHls(); }, 1200);
-});
-
 /* Video: loads only when tapped */
 document.getElementById('playBtn').addEventListener('click', function(){
   var box = document.getElementById('video');
-  if (CONFIG.VIDEO_FILE) {
-    var v = document.createElement('video');
-    v.controls = true; v.playsInline = true; v.setAttribute('playsinline', '');
-    v.poster = 'img/vsl-poster.jpg'; v.preload = 'auto';
-    var speeds = [1, 1.5, 2], rate = CONFIG.VIDEO_SPEED, sp = document.createElement('button');
-    sp.type = 'button'; sp.className = 'speed';
-    function setSpeed(r){ rate = r; v.defaultPlaybackRate = r; v.playbackRate = r; sp.textContent = 'Speed ' + r + 'x'; sp.setAttribute('aria-label', 'Playback speed ' + r + 'x, tap to change'); }
-    sp.addEventListener('click', function(){ setSpeed(speeds[(speeds.indexOf(rate) + 1) % speeds.length]); });
-    // Some browsers reset the speed when the video loads or starts, so set it again
-    v.addEventListener('loadedmetadata', function(){ v.playbackRate = rate; });
-    v.addEventListener('play', function(){ if (v.playbackRate !== rate) v.playbackRate = rate; });
-    v.addEventListener('ratechange', function(){ if (v.playbackRate !== rate) { rate = v.playbackRate; sp.textContent = 'Speed ' + rate + 'x'; } });
-    v.addEventListener('ended', function(){ if (window.fbq) fbq('trackCustom', 'VSLComplete'); });
-    box.innerHTML = ''; box.appendChild(v); box.appendChild(sp); setSpeed(CONFIG.VIDEO_SPEED);
-    function go(){ setSpeed(rate); var pr = v.play(); if (pr && pr.catch) pr.catch(function(){}); }
-    if (CONFIG.VIDEO_HLS && v.canPlayType('application/vnd.apple.mpegurl')) {
-      v.src = CONFIG.VIDEO_HLS; go();                       // iPhone, iPad, Safari: built-in streaming
-    } else if (CONFIG.VIDEO_HLS) {
-      loadHls(function(ok){
-        if (ok && window.Hls && Hls.isSupported()) {
-          var hls = new Hls({ capLevelToPlayerSize: true, startLevel: -1, maxBufferLength: 30, maxMaxBufferLength: 60 });
-          hls.loadSource(CONFIG.VIDEO_HLS); hls.attachMedia(v);
-          hls.on(Hls.Events.MANIFEST_PARSED, go);
-          hls.on(Hls.Events.ERROR, function(e, d){ if (d.fatal) { hls.destroy(); v.src = CONFIG.VIDEO_FILE; go(); } });
-        } else { v.src = CONFIG.VIDEO_FILE; go(); }
-      });
-    } else { v.src = CONFIG.VIDEO_FILE; go(); }
-    return;
+  if (!CONFIG.YOUTUBE_ID) return;
+  box.innerHTML = '<div id="ytPlayer"></div>';
+  function make(){
+    var speedSet = false;
+    new YT.Player('ytPlayer', {
+      videoId: CONFIG.YOUTUBE_ID,
+      width: '100%', height: '100%',
+      playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1 },
+      events: {
+        onReady: function(e){ e.target.setPlaybackRate(CONFIG.VIDEO_SPEED); e.target.playVideo(); },
+        onStateChange: function(e){
+          if (e.data === YT.PlayerState.PLAYING && !speedSet) { speedSet = true; e.target.setPlaybackRate(CONFIG.VIDEO_SPEED); }
+          if (e.data === YT.PlayerState.ENDED && window.fbq) fbq('trackCustom', 'VSLComplete');
+        }
+      }
+    });
   }
-  if (!CONFIG.VIDEO_EMBED_URL) return;
-  var url = CONFIG.VIDEO_EMBED_URL + (CONFIG.VIDEO_EMBED_URL.indexOf('?') > -1 ? '&' : '?') + 'autoplay=1';
-  box.innerHTML = '<iframe src="' + url + '" title="Video" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+  if (window.YT && YT.Player) return make();
+  window.onYouTubeIframeAPIReady = make;
+  var s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(s);
 });
 
 /* Chat: page holds still while the chat scrolls past, then the page moves on */
