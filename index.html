@@ -73,7 +73,10 @@ p{margin:0 0 12px}
 .play::after{content:"";border-left:20px solid var(--ink);border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px}
 .video .vt{font-family:var(--display);font-weight:800;font-size:17px;padding:0 20px;line-height:1.25}
 .video .vs{font-size:13px;color:#B9BCCB}
-.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--ink)}
+.video .poster{background:var(--ink) url("img/vsl-poster.jpg") center/cover no-repeat}
+.video .poster:hover{filter:brightness(1.05)}
+.speed{position:absolute;top:10px;right:10px;z-index:2;border:0;border-radius:20px;padding:5px 11px;background:rgba(16,18,31,.8);color:#fff;font:700 13px var(--body);cursor:pointer}
 
 /* Buttons */
 .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:64px;padding:10px 16px;border:0;border-radius:10px;background:var(--lime);color:var(--ink);text-decoration:none;cursor:pointer;box-shadow:0 4px 0 var(--ink),0 0 0 2px var(--ink) inset;font-family:var(--display);font-stretch:110%;font-weight:900;font-size:21px;line-height:1.15}
@@ -245,11 +248,7 @@ footer a{color:var(--muted)}
   <p class="sub">We run the Facebook ads and our AI books the calls on your calendar, for just <b>$697/month</b>. No contract. If you don't get 20+ booked appointments in 30 days, <b>we work for free</b>.</p>
 
   <div class="video" id="video">
-    <button type="button" id="playBtn" aria-label="Play video: real numbers from a real mortgage ad account">
-      <span class="play" aria-hidden="true"></span>
-      <span class="vt">Watch: real numbers from a real mortgage ad account</span>
-      <span class="vs">2 minute video</span>
-    </button>
+    <button type="button" id="playBtn" class="poster" aria-label="Play video: 57 booked appointments in 30 days, real account, real numbers"></button>
   </div>
 
   <div class="fitbox">
@@ -325,7 +324,7 @@ footer a{color:var(--muted)}
 <section class="sec alt">
   <h2>Your full investment</h2>
   <div class="price">
-    <div class="row"><span>Our service (founding price)</span><b>$697/mo</b></div>
+    <div class="row"><span>Our service</span><b>$697/mo</b></div>
     <div class="row"><span>Ad budget (paid to Facebook)</span><b>~$1,000/mo</b></div>
     <div class="row"><span>Setup fee / contract</span><b>$0 / None</b></div>
     <div class="row total"><span>Total</span><b>~$1,697/mo</b></div>
@@ -395,7 +394,6 @@ footer a{color:var(--muted)}
 <!-- FORM -->
 <section class="sec dark" id="apply">
   <h2>See if you qualify</h2>
-  <p class="small" style="margin-bottom:18px">Only 10 brokers get the $697 founding price.</p>
   <div class="card">
     <form id="qform" novalidate>
       <p class="stepnote" id="stepnote">Step 1 of 2</p>
@@ -453,6 +451,9 @@ footer a{color:var(--muted)}
 var CONFIG = {
   // Video embed link (YouTube, Vimeo, Wistia or Loom embed URL). Leave empty until the video is ready.
   VIDEO_EMBED_URL: "",
+  // Self-hosted video file (plays at 1.5x speed by default)
+  VIDEO_FILE: "vsl/vsl.mp4",
+  VIDEO_SPEED: 1.5,
   // Google Apps Script Web app URL (ends with /exec). Leads go to your Google Sheet.
   FORM_WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbzilelGW9A-Gve9P71YAW8bchJdO9HHRsO5X2AiGjd7uxHTyHWqlrOGIOB0SozOyW6N/exec"
 };
@@ -461,9 +462,26 @@ var CONFIG = {
 /* Video: loads only when tapped */
 document.getElementById('playBtn').addEventListener('click', function(){
   var box = document.getElementById('video');
-  if (!CONFIG.VIDEO_EMBED_URL) { this.querySelector('.vs').textContent = 'Video coming soon'; return; }
+  if (CONFIG.VIDEO_FILE) {
+    var v = document.createElement('video');
+    v.src = CONFIG.VIDEO_FILE; v.controls = true; v.playsInline = true; v.setAttribute('playsinline', '');
+    v.poster = 'img/vsl-poster.jpg'; v.preload = 'auto';
+    var speeds = [1, 1.5, 2], rate = CONFIG.VIDEO_SPEED, sp = document.createElement('button');
+    sp.type = 'button'; sp.className = 'speed';
+    function setSpeed(r){ rate = r; v.defaultPlaybackRate = r; v.playbackRate = r; sp.textContent = 'Speed ' + r + 'x'; sp.setAttribute('aria-label', 'Playback speed ' + r + 'x, tap to change'); }
+    sp.addEventListener('click', function(){ setSpeed(speeds[(speeds.indexOf(rate) + 1) % speeds.length]); });
+    // Some browsers reset the speed when the video loads or starts, so set it again
+    v.addEventListener('loadedmetadata', function(){ v.playbackRate = rate; });
+    v.addEventListener('play', function(){ if (v.playbackRate !== rate) v.playbackRate = rate; });
+    v.addEventListener('ratechange', function(){ if (v.playbackRate !== rate) { rate = v.playbackRate; sp.textContent = 'Speed ' + rate + 'x'; } });
+    v.addEventListener('ended', function(){ if (window.fbq) fbq('trackCustom', 'VSLComplete'); });
+    box.innerHTML = ''; box.appendChild(v); box.appendChild(sp); setSpeed(CONFIG.VIDEO_SPEED);
+    var pr = v.play(); if (pr && pr.catch) pr.catch(function(){});
+    return;
+  }
+  if (!CONFIG.VIDEO_EMBED_URL) return;
   var url = CONFIG.VIDEO_EMBED_URL + (CONFIG.VIDEO_EMBED_URL.indexOf('?') > -1 ? '&' : '?') + 'autoplay=1';
-  box.innerHTML = '<iframe src="' + url + '" title="Real numbers from a real mortgage ad account" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+  box.innerHTML = '<iframe src="' + url + '" title="Video" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
 });
 
 /* Chat: page holds still while the chat scrolls past, then the page moves on */
