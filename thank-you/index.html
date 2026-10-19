@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>You qualify | Infinix Online</title>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '358881540016675');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=358881540016675&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#10121F;--ink-2:#2A2E42;--muted:#5B6072;--paper:#F4F4F1;--white:#fff;--lime:#B0F411;--line:#E3E1DA}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Source Sans 3",Arial,sans-serif;font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:22px 20px 40px;text-align:center}
+.logo img{height:24px;width:auto;margin:0 auto 22px;display:block}
+.card{background:var(--white);border:3px solid var(--ink);border-radius:12px;padding:24px 18px}
+.badge{width:64px;height:64px;border-radius:50%;background:var(--lime);border:3px solid var(--ink);margin:0 auto 14px;position:relative}
+.badge::after{content:"";position:absolute;left:21px;top:12px;width:13px;height:24px;border:solid var(--ink);border-width:0 5px 5px 0;transform:rotate(45deg)}
+h1{font-family:"Archivo",Arial,sans-serif;font-stretch:112%;font-weight:900;font-size:28px;line-height:1.1;margin:0 0 10px}
+p{margin:0 0 12px;color:var(--ink-2)}
+.steps{text-align:left;background:var(--paper);border-radius:10px;padding:14px 16px;margin:16px 0 0;font-size:16px}
+.steps li{margin:4px 0}
+.cal-frame{width:100%;min-height:680px;border:0;margin-top:14px;border-radius:8px}
+.cal-missing{border:2px dashed var(--line);border-radius:8px;padding:16px;margin-top:14px;font-size:14px;color:var(--muted)}
+.small{font-size:13px;color:var(--muted);margin-top:18px}
+a{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="logo"><img src="../img/img1.png" alt="Infinix Online" width="141" height="24"></div>
+<div class="card">
+  <div class="badge" aria-hidden="true"></div>
+  <h1 id="hi">Thanks, you qualify!</h1>
+  <p id="sub">Last step: pick a time for your free 15-minute call below.</p>
+  <div id="calSlot"></div>
+  <ol class="steps" id="steps">
+    <li>Pick a time that works for you</li>
+    <li>Check your email for the invite</li>
+    <li>On the call, we show you how the ads and booking work for your area</li>
+  </ol>
+</div>
+<p class="small">Infinix Online Ltd. UK registered company.<br><a href="https://infinixonline.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a></p>
+</div>
+<script>
+/* ===== SETTINGS ===== */
+// Calendly or Cal.com booking link. Leave empty until ready.
+var CALENDAR_EMBED_URL = "";
+/* ==================== */
+var P = new URLSearchParams(location.search);
+var first = (P.get('n') || '').replace(/[^\p{L} '\-]/gu, '').slice(0, 30);
+if (first) document.getElementById('hi').textContent = 'Thanks, ' + first + '!';
+
+// Meta Lead event: fires once per submission (not again on page refresh)
+var sid = P.get('sid');
+if (sid && window.fbq) {
+  var key = 'lead_' + sid, done = false;
+  try { done = sessionStorage.getItem(key) === '1'; } catch (e) {}
+  if (!done) {
+    fbq('track', 'Lead', {content_name: 'Mortgage broker qualify form'}, {eventID: sid});
+    try { sessionStorage.setItem(key, '1'); } catch (e) {}
+  }
+}
+var slot = document.getElementById('calSlot');
+if (CALENDAR_EMBED_URL) {
+  var f = document.createElement('iframe'); f.src = CALENDAR_EMBED_URL; f.className = 'cal-frame'; f.title = 'Book your call'; slot.appendChild(f);
+} else {
+  document.getElementById('sub').textContent = 'We will contact you within 1 business day to book your free 15-minute call.';
+  document.getElementById('steps').hidden = true;
+}
+</script>
+</body>
+</html>

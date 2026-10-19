@@ -5,7 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Infinix Online | 20+ Booked Appointments for Mortgage Brokers</title>
 <meta name="description" content="For independent mortgage brokers. 20+ booked borrower appointments in 30 days, or we work for free.">
-<!-- Meta Pixel: paste your pixel code here -->
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '358881540016675');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=358881540016675&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -397,7 +413,7 @@ var CONFIG = {
   VIDEO_EMBED_URL: "",
   // Google Apps Script Web app URL (ends with /exec). Leads go to your Google Sheet.
   FORM_WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbzilelGW9A-Gve9P71YAW8bchJdO9HHRsO5X2AiGjd7uxHTyHWqlrOGIOB0SozOyW6N/exec",
-  // Calendly or Cal.com link for good-fit brokers (shown after a qualified submit).
+  // Calendar link is now set in thank-you/index.html
   CALENDAR_EMBED_URL: ""
 };
 /* ================================== */
@@ -480,14 +496,10 @@ document.getElementById('playBtn').addEventListener('click', function(){
     data.qualified = data.owner === 'yes' && data.team_size !== '10+' && data.loans_per_month !== '0' && data.budget_ok === 'yes';
     var btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = 'Sending...';
     function finish(){
-      form.hidden = true;
-      var box = document.getElementById(data.qualified ? 'fit' : 'nofit'); box.hidden = false; box.focus();
-      if (!data.qualified) return;
-      var slot = document.getElementById('calSlot');
-      if (CONFIG.CALENDAR_EMBED_URL) {
-        var f = document.createElement('iframe'); f.src = CONFIG.CALENDAR_EMBED_URL; f.className = 'cal-frame'; f.title = 'Book your call'; slot.appendChild(f);
-      } else { slot.innerHTML = '<div class="cal-missing">Calendar goes here. Add your calendar link in the settings.</div>'; }
-      if (window.fbq) fbq('track', 'Lead');
+      // Qualified leads go to the thank-you page (fires the Lead event). Others go to the not-a-fit page.
+      var dest = data.qualified ? 'thank-you/' : 'not-a-fit/';
+      var q = '?sid=' + encodeURIComponent(data.submission_id) + '&n=' + encodeURIComponent(data.name.split(' ')[0]);
+      location.href = dest + q;
     }
     data.submission_id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     if (!CONFIG.FORM_WEBHOOK_URL) { console.log('Form data (no webhook set):', data); finish(); return; }
