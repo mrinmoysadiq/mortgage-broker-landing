@@ -162,6 +162,8 @@ legend{font-weight:700;font-size:17px;margin-bottom:8px;padding:0}
 .inp label{display:block;font-weight:700;font-size:15px;margin-bottom:5px}
 .inp input{width:100%;min-height:52px;border:2px solid var(--line);border-radius:8px;padding:0 14px;font-size:17px;font-family:var(--body);color:var(--ink)}
 .inp input:focus{border-color:var(--ink);outline:none}
+.consent{display:grid;grid-template-columns:24px 1fr;gap:10px;font-size:13px;color:var(--muted);margin:4px 0 16px}
+.consent input{width:22px;height:22px;margin-top:2px;accent-color:var(--ink)}
 .err{color:#B3261E;font-weight:700;font-size:15px;margin:0 0 10px;text-align:center}
 .err:empty{display:none}
 .backlink{all:unset;cursor:pointer;display:block;margin:14px auto 0;font-size:15px;color:var(--muted);text-decoration:underline}
@@ -372,6 +374,7 @@ footer a{color:var(--muted)}
         <div class="inp"><label for="email">Email</label><input id="email" type="email" autocomplete="email"></div>
         <div class="inp"><label for="phone">Mobile phone</label><input id="phone" type="tel" autocomplete="tel" inputmode="tel"></div>
         <div class="inp"><label for="states">State(s) you're licensed in</label><input id="states" placeholder="For example: CO, TX"></div>
+        <label class="consent"><input type="checkbox" id="consent"><span>I agree to get calls and texts from Infinix Online about my request, including automated texts. Message and data rates may apply. Reply STOP to opt out.</span></label>
         <p class="err" id="err2" role="alert"></p>
         <button type="submit" class="btn" id="submitBtn">See if I qualify</button>
         <button type="button" class="backlink" id="back">Back</button>
@@ -473,9 +476,10 @@ document.getElementById('playBtn').addEventListener('click', function(){
     if (!name || !email || !phone || !states) { err.textContent = 'Please fill in all 4 fields.'; return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email.'; return; }
     if (phone.replace(/\D/g,'').length < 10) { err.textContent = 'Please enter a valid mobile number.'; return; }
+    if (!document.getElementById('consent').checked) { err.textContent = 'Please tick the box so we can contact you.'; return; }
     err.textContent = '';
     var data = { name:name, email:email, phone:phone, licensed_states:states, owner:val('owner'), team_size:val('team'),
-      loans_per_month:val('loans'), budget_ok:val('budget'), page:location.href, submitted_at:new Date().toISOString() };
+      loans_per_month:val('loans'), budget_ok:val('budget'), consent:true, page:location.href, submitted_at:new Date().toISOString() };
     data.qualified = data.owner === 'yes' && data.team_size !== '10+' && data.loans_per_month !== '0' && data.budget_ok === 'yes';
     var btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = 'Sending...';
     function finish(){
