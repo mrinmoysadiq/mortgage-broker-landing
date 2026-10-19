@@ -133,7 +133,19 @@ input[type=range]{width:100%;accent-color:var(--lime);height:28px;margin-top:6px
 .duties li{margin:4px 0}
 
 /* Founder */
-.founder img{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid var(--lime);margin:0 auto 12px}
+.kicker{font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.fhead{display:flex;align-items:center;gap:14px;text-align:left;margin:4px 0 12px}
+.fhead img{width:84px;height:84px;flex:none;border-radius:50%;object-fit:cover;border:4px solid var(--lime);box-shadow:0 0 0 2px var(--ink)}
+.fhead p{margin:0;font-size:18px}
+.fintro{text-align:left;font-size:18px}
+.list.how{margin:16px 0}
+.list.how li{font-weight:400;font-size:16px;line-height:1.4}
+.list.how li b{display:block;font-size:17px;margin-bottom:2px}
+.clock{background:var(--ink);color:#E5E7EF;border-radius:12px;padding:16px;text-align:left;font-size:16px;margin-bottom:18px}
+.clock p{margin:0}
+.clock .clock-t{font-family:var(--display);font-stretch:110%;font-weight:850;font-size:20px;color:var(--lime);margin-bottom:6px}
+.team{width:100%;height:auto;border-radius:12px}
+.reg{font-size:12px;color:var(--muted);margin:14px 0 0}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:12px}
 .chips span{font-size:13px;font-weight:700;border:1.5px solid var(--ink);border-radius:20px;padding:4px 10px}
 
@@ -337,12 +349,29 @@ footer a{color:var(--muted)}
   </ul>
 </section>
 
-<!-- FOUNDER -->
-<section class="sec alt founder">
-  <img src="img/img5.jpg" alt="Mrinmoy Sadiq" width="110" height="110">
-  <h3>Mrinmoy Sadiq, founder of Infinix Online</h3>
-  <p style="margin-top:10px">5+ years and $2M+ in ad spend managed for businesses in the US, UK and Australia. We built this offer for the brokers big agencies turn away.</p>
-  <div class="chips"><span>Top Rated Plus, Upwork</span><span>96% job success</span><span>GHL Certified</span></div>
+<!-- FOUNDER + TEAM -->
+<section class="sec alt founder" id="team">
+  <p class="kicker">Who runs your ads</p>
+  <h2>How we charge $697 when US agencies charge $2,000+</h2>
+  <div class="fhead">
+    <img src="img/founder.jpg" alt="Mrinmoy Sadiq, founder of Infinix Online" width="96" height="96">
+    <p><b>Hi, I'm Mrinmoy Sadiq,</b> founder of Infinix Online.</p>
+  </div>
+  <p class="fintro">We are a <b>UK registered company</b> with a full-time team in <b>Dhaka, Bangladesh</b>. We work <b>only with small mortgage brokers in the USA</b>. No other industries, no big lenders.</p>
+  <ul class="list ok how">
+    <li><b>Lower cost, not lower skill.</b> A senior media buyer costs far less in Dhaka than in Dallas. You pay for the work, not for a US office and US salaries.</li>
+    <li><b>The same tools US agencies use.</b> Meta Ads, GoHighLevel, AI texting and full tracking. Only the bill is different.</li>
+    <li><b>Built for brokers, ready on day one.</b> The ads, AI scripts and follow-up are already built and tested on real mortgage accounts. We don't learn on your money.</li>
+    <li><b>No sales team, no account managers.</b> You talk directly to the people who run your ads.</li>
+  </ul>
+  <div class="clock">
+    <p class="clock-t">We work while you sleep</p>
+    <p>Dhaka is 10 to 11 hours ahead of the US East Coast. While you sleep, we check your ads and fix what isn't working. And your AI assistant texts new leads day and night.</p>
+  </div>
+  <img class="team" src="img/team.jpg" width="1080" height="910" alt="Infinix Online team in Dhaka: Mahir M. Nahi, Shadman B. Utsash, Golam M. Arian, Ankur Biswas, Mohiuddin and Labiba Ibnat" loading="lazy">
+  <p class="cap">The team behind your leads, in Dhaka, Bangladesh.</p>
+  <div class="chips"><span>UK registered company</span><span>Top Rated Plus, Upwork</span><span>96% job success</span><span>$2M+ ad spend managed</span><span>GHL Certified</span></div>
+  <p class="reg">Infinix Online Ltd, registered in England. Suite A, 82 James Carter Road, Mildenhall, Bury St. Edmunds, IP28 7DE.</p>
 </section>
 
 <!-- FAQ -->
