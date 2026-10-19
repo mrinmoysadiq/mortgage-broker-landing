@@ -66,16 +66,16 @@ p{margin:0 0 12px}
 
 /* Video */
 .video{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:var(--ink);border:3px solid var(--ink);margin-bottom:18px}
-.video button{all:unset;cursor:pointer;position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--white);
+.video #playBtn{all:unset;cursor:pointer;position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--white);
  background:radial-gradient(circle at 50% 45%,#2A2E42 0%,#10121F 70%)}
-.video button:focus-visible{outline:3px solid var(--lime);outline-offset:-6px}
+.video #playBtn:focus-visible{outline:3px solid var(--lime);outline-offset:-6px}
 .play{width:68px;height:68px;border-radius:50%;background:var(--lime);display:grid;place-items:center;box-shadow:0 0 0 8px rgba(176,244,17,.18)}
 .play::after{content:"";border-left:20px solid var(--ink);border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px}
 .video .vt{font-family:var(--display);font-weight:800;font-size:17px;padding:0 20px;line-height:1.25}
 .video .vs{font-size:13px;color:#B9BCCB}
 .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--ink)}
-.video .poster{background:var(--ink) url("img/vsl-poster.jpg") center/cover no-repeat}
-.video .poster:hover{filter:brightness(1.05)}
+.video #playBtn.poster{background:var(--ink) url("img/vsl-poster.jpg") center/cover no-repeat}
+.video #playBtn.poster:hover{filter:brightness(1.05)}
 .speed{position:absolute;top:10px;right:10px;z-index:2;border:0;border-radius:20px;padding:5px 11px;background:rgba(16,18,31,.8);color:#fff;font:700 13px var(--body);cursor:pointer}
 
 /* Buttons */
