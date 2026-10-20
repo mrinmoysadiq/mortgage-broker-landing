@@ -637,13 +637,20 @@ var CONFIG = {
     }
     data.submission_id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     if (!CONFIG.FORM_WEBHOOK_URL) { console.log('Form data (no webhook set):', data); finish(); return; }
-    var body = JSON.stringify(data);
-    function send(){ return fetch(CONFIG.FORM_WEBHOOK_URL, {method:'POST', mode:'no-cors', keepalive:true, headers:{'Content-Type':'text/plain;charset=utf-8'}, body:body}); }
-    send()
-      .catch(function(){ return new Promise(function(r){ setTimeout(r, 1500); }).then(send); })
-      .catch(function(){ return new Promise(function(r){ setTimeout(r, 3000); }).then(send); })
-      .then(finish)
-      .catch(function(){ btn.disabled = false; btn.textContent = 'See if I qualify'; err.textContent = 'Could not send. Check your connection and try again.'; });
+    if (navigator.onLine === false) { btn.disabled = false; btn.textContent = 'See if I qualify'; err.textContent = 'You seem to be offline. Check your internet and try again.'; return; }
+    var body = JSON.stringify(data), done = false;
+    function go(){ if (!done) { done = true; finish(); } }
+    // 1. Hand the lead to the browser's background sender. It keeps sending even after the page changes,
+    //    so we never wait for Google's reply.
+    var queued = false;
+    try { queued = !!(navigator.sendBeacon && navigator.sendBeacon(CONFIG.FORM_WEBHOOK_URL, new Blob([body], {type:'text/plain;charset=utf-8'}))); } catch(e) {}
+    if (queued) { setTimeout(go, 400); }
+    else {
+      // 2. Older browsers: normal send that also survives the page change
+      fetch(CONFIG.FORM_WEBHOOK_URL, {method:'POST', mode:'no-cors', keepalive:true, headers:{'Content-Type':'text/plain;charset=utf-8'}, body:body})
+        .then(go, go);
+      setTimeout(go, 2500); // never wait longer than 2.5 seconds
+    }
   });
 })();
 </script>
