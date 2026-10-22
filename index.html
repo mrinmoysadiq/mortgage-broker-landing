@@ -205,6 +205,17 @@ legend .hint{display:block;font-weight:400;font-size:14px;color:var(--muted);mar
 .backlink{all:unset;cursor:pointer;display:block;margin:14px auto 0;font-size:15px;color:var(--muted);text-decoration:underline}
 .result{text-align:center}
 .result h3{font-size:24px;margin-bottom:10px}
+.qform .opt span{color:var(--ink);background:var(--white)}
+.opts.big .opt span{padding:16px 6px;font-size:17px;font-weight:700}
+.qstep1 fieldset{margin-bottom:4px}
+.s2title{font-family:var(--display);font-stretch:110%;font-weight:850;font-size:19px;margin:0 0 12px;text-align:center}
+.opt-tag{font-weight:400;color:var(--muted)}
+.hero-form{background:var(--ink);color:var(--white);border-radius:16px;padding:20px 14px 16px;margin:4px 0 22px;box-shadow:0 0 0 3px var(--lime)}
+.hf-tag{display:inline-block;background:var(--lime);color:var(--ink);font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase;border-radius:20px;padding:4px 12px;margin:0 0 10px}
+.hf-title{font-size:25px;margin:0 0 8px}
+.hf-sub{font-size:16px;color:#D5D8E2;margin:0 0 14px}
+.hf-trust{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;font-size:14px;font-weight:700;color:#E5E7EF}
+.hf-trust li::before{content:"";display:inline-block;width:6px;height:10px;margin:0 7px 2px 0;border:solid var(--lime);border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
 [hidden]{display:none!important}
 
 .shot{all:unset;display:block;cursor:zoom-in;margin-top:14px;border:2px solid var(--ink);border-radius:10px;overflow:hidden;background:var(--white)}
@@ -266,6 +277,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="video" id="video">
     <button type="button" id="playBtn" class="poster" aria-label="Play video: 57 booked appointments in 30 days, real account, real numbers"></button>
+  </div>
+
+  <div class="hero-form" id="start">
+    <p class="hf-tag">Small brokers only</p>
+    <h2 class="hf-title">Want 20+ booked borrower calls next month?</h2>
+    <p class="hf-sub">Answer 1 question and I'll call you personally to see if we're a fit.</p>
+    <div class="card">
+    <form class="qform" data-loc="hero" novalidate>
+      <p class="stepnote">Step 1 of 2 · takes 30 seconds</p>
+      <div class="prog" aria-hidden="true"><i></i></div>
+      <div class="qstep1">
+        <fieldset><legend>Do you own your brokerage?</legend><div class="opts big">
+          <label class="opt"><input type="radio" name="owner" value="yes"><span>Yes, I own it</span></label>
+          <label class="opt"><input type="radio" name="owner" value="no"><span>No, I'm an LO</span></label></div></fieldset>
+        <p class="err e1" role="alert"></p>
+      </div>
+      <div class="qstep2" hidden>
+        <p class="s2title">Great. Where should I call you?</p>
+        <div class="inp"><label for="h-name">Name</label><input id="h-name" class="f-name" autocomplete="name"></div>
+        <div class="inp"><label for="h-email">Email</label><input id="h-email" class="f-email" type="email" autocomplete="email"></div>
+        <div class="inp"><label for="h-phone">Mobile phone</label><input id="h-phone" class="f-phone" type="tel" autocomplete="tel" inputmode="tel"></div>
+        <div class="inp"><label for="h-web">Your website <span class="opt-tag">(optional)</span></label><input id="h-web" class="f-web" type="url" inputmode="url" autocomplete="url" placeholder="yourbrokerage.com"></div>
+        <label class="consent"><input type="checkbox" class="f-consent"><span>I agree to get calls and texts from Infinix Online about my request, including automated texts. Message and data rates may apply. Reply STOP to opt out.</span></label>
+        <p class="err e2" role="alert"></p>
+        <button type="submit" class="btn f-submit">Check if I qualify</button>
+        <button type="button" class="backlink f-back">Back</button>
+      </div>
+    </form>
+    </div>
+    <ul class="hf-trust"><li>No contract</li><li>No setup fee</li><li>20+ calls or we work free</li></ul>
   </div>
 
   <div class="fitbox">
@@ -412,40 +453,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="sec dark" id="apply">
   <h2>See if you qualify</h2>
   <div class="card">
-    <form id="qform" novalidate>
-      <p class="stepnote" id="stepnote">Step 1 of 2</p>
-      <div class="prog" aria-hidden="true"><i id="progbar"></i></div>
-
-      <div id="step1">
-        <fieldset><legend>Do you own your brokerage?</legend><div class="opts">
-          <label class="opt"><input type="radio" name="owner" value="yes"><span>Yes</span></label>
+    <form class="qform" data-loc="bottom" novalidate>
+      <p class="stepnote">Step 1 of 2 · takes 30 seconds</p>
+      <div class="prog" aria-hidden="true"><i></i></div>
+      <div class="qstep1">
+        <fieldset><legend>Do you own your brokerage?</legend><div class="opts big">
+          <label class="opt"><input type="radio" name="owner" value="yes"><span>Yes, I own it</span></label>
           <label class="opt"><input type="radio" name="owner" value="no"><span>No, I'm an LO</span></label></div></fieldset>
-        <fieldset><legend>Loan officers on your team?</legend><div class="opts">
-          <label class="opt"><input type="radio" name="team" value="just_me"><span>Just me</span></label>
-          <label class="opt"><input type="radio" name="team" value="2-5"><span>2 to 5</span></label>
-          <label class="opt"><input type="radio" name="team" value="6-10"><span>6 to 10</span></label>
-          <label class="opt"><input type="radio" name="team" value="10+"><span>10+</span></label></div></fieldset>
-        <fieldset><legend>Loans you close a month?</legend><div class="opts">
-          <label class="opt"><input type="radio" name="loans" value="0"><span>0</span></label>
-          <label class="opt"><input type="radio" name="loans" value="1-3"><span>1 to 3</span></label>
-          <label class="opt"><input type="radio" name="loans" value="4-10"><span>4 to 10</span></label>
-          <label class="opt"><input type="radio" name="loans" value="10+"><span>10+</span></label></div></fieldset>
-        <fieldset><legend>Can you invest at least ~$1,700/month in total?<span class="hint">$697 our service + ~$1,000 or more ad budget (paid to Facebook)</span></legend><div class="opts">
-          <label class="opt"><input type="radio" name="budget" value="yes"><span>Yes</span></label>
-          <label class="opt"><input type="radio" name="budget" value="no"><span>Not right now</span></label></div></fieldset>
-        <p class="err" id="err1" role="alert"></p>
-        <button type="button" class="btn" id="next">Next step</button>
+        <p class="err e1" role="alert"></p>
       </div>
-
-      <div id="step2" hidden>
-        <div class="inp"><label for="name">Name</label><input id="name" autocomplete="name"></div>
-        <div class="inp"><label for="email">Email</label><input id="email" type="email" autocomplete="email"></div>
-        <div class="inp"><label for="phone">Mobile phone</label><input id="phone" type="tel" autocomplete="tel" inputmode="tel"></div>
-        <div class="inp"><label for="states">State(s) you're licensed in</label><input id="states" placeholder="For example: CO, TX"></div>
-        <label class="consent"><input type="checkbox" id="consent"><span>I agree to get calls and texts from Infinix Online about my request, including automated texts. Message and data rates may apply. Reply STOP to opt out.</span></label>
-        <p class="err" id="err2" role="alert"></p>
-        <button type="submit" class="btn" id="submitBtn">See if I qualify</button>
-        <button type="button" class="backlink" id="back">Back</button>
+      <div class="qstep2" hidden>
+        <p class="s2title">Great. Where should I call you?</p>
+        <div class="inp"><label for="b-name">Name</label><input id="b-name" class="f-name" autocomplete="name"></div>
+        <div class="inp"><label for="b-email">Email</label><input id="b-email" class="f-email" type="email" autocomplete="email"></div>
+        <div class="inp"><label for="b-phone">Mobile phone</label><input id="b-phone" class="f-phone" type="tel" autocomplete="tel" inputmode="tel"></div>
+        <div class="inp"><label for="b-web">Your website <span class="opt-tag">(optional)</span></label><input id="b-web" class="f-web" type="url" inputmode="url" autocomplete="url" placeholder="yourbrokerage.com"></div>
+        <label class="consent"><input type="checkbox" class="f-consent"><span>I agree to get calls and texts from Infinix Online about my request, including automated texts. Message and data rates may apply. Reply STOP to opt out.</span></label>
+        <p class="err e2" role="alert"></p>
+        <button type="submit" class="btn f-submit">See if I qualify</button>
+        <button type="button" class="backlink f-back">Back</button>
       </div>
     </form>
 
@@ -634,64 +660,73 @@ var CONFIG = {
 (function(){
   var sticky = document.getElementById('sticky');
   if (!('IntersectionObserver' in window)) return;
-  new IntersectionObserver(function(e){ sticky.classList.toggle('hide', e[0].isIntersecting); }, {threshold: 0.05}).observe(document.getElementById('apply'));
+  // Hide the sticky button while either form is on screen
+  var seen = {};
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ seen[e.target.id] = e.isIntersecting; });
+    sticky.classList.toggle('hide', seen.apply || seen.start);
+  }, {threshold: 0.05});
+  io.observe(document.getElementById('apply')); io.observe(document.getElementById('start'));
 })();
 
 /* Two-step form */
-(function(){
-  var form = document.getElementById('qform');
-  var s1 = document.getElementById('step1'), s2 = document.getElementById('step2');
-  var val = function(n){ var el = form.querySelector('input[name="'+n+'"]:checked'); return el ? el.value : ''; };
-  var g = function(id){ return document.getElementById(id).value.trim(); };
+/* Lead forms (hero + bottom): same checks, same sending, same thank-you page */
+document.querySelectorAll('.qform').forEach(function(form){
+  var s1 = form.querySelector('.qstep1'), s2 = form.querySelector('.qstep2');
+  var note = form.querySelector('.stepnote'), bar = form.querySelector('.prog i'), title = form.querySelector('.s2title');
+  var q = function(c){ return form.querySelector(c); };
+  var v = function(c){ return q(c).value.trim(); };
+  function owner(){ var el = form.querySelector('input[name="owner"]:checked'); return el ? el.value : ''; }
   function setStep(n){
     s1.hidden = n !== 1; s2.hidden = n !== 2;
-    document.getElementById('stepnote').textContent = 'Step ' + n + ' of 2';
-    document.getElementById('progbar').style.width = n === 1 ? '50%' : '100%';
+    note.textContent = n === 1 ? 'Step 1 of 2 · takes 30 seconds' : 'Step 2 of 2 · almost done';
+    bar.style.width = n === 1 ? '50%' : '100%';
   }
-  document.getElementById('next').addEventListener('click', function(){
-    var err = document.getElementById('err1');
-    if (['owner','team','loans','budget'].some(function(n){ return !val(n); })) { err.textContent = 'Please answer all 4 questions.'; return; }
-    err.textContent = ''; setStep(2); document.getElementById('name').focus();
+  // One tap on an answer moves straight to step 2
+  form.querySelectorAll('input[name="owner"]').forEach(function(r){
+    r.addEventListener('change', function(){
+      q('.e1').textContent = '';
+      title.textContent = owner() === 'yes' ? "Great. Where should I call you?" : "No problem. Where should I call you?";
+      setTimeout(function(){ setStep(2); q('.f-name').focus({preventScroll:true}); }, 180);
+    });
   });
-  document.getElementById('back').addEventListener('click', function(){ setStep(1); });
+  q('.f-back').addEventListener('click', function(){ setStep(1); });
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
-    var err = document.getElementById('err2');
-    var name = g('name'), email = g('email'), phone = g('phone'), states = g('states');
-    if (!name || !email || !phone || !states) { err.textContent = 'Please fill in all 4 fields.'; return; }
+    var err = q('.e2'), btn = q('.f-submit'), label = btn.textContent;
+    if (!owner()) { setStep(1); q('.e1').textContent = 'Please answer the question first.'; return; }
+    var name = v('.f-name'), email = v('.f-email'), phone = v('.f-phone'), web = v('.f-web');
+    if (!name || !email || !phone) { err.textContent = 'Please fill in your name, email and phone.'; return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email.'; return; }
     if (phone.replace(/\D/g,'').length < 10) { err.textContent = 'Please enter a valid mobile number.'; return; }
-    if (!document.getElementById('consent').checked) { err.textContent = 'Please tick the box so we can contact you.'; return; }
+    if (!q('.f-consent').checked) { err.textContent = 'Please tick the box so we can contact you.'; return; }
     err.textContent = '';
-    var data = { name:name, email:email, phone:phone, licensed_states:states, owner:val('owner'), team_size:val('team'),
-      loans_per_month:val('loans'), budget_ok:val('budget'), consent:true, page:location.href, submitted_at:new Date().toISOString() };
-    data.qualified = data.owner === 'yes' && data.team_size !== '10+' && data.loans_per_month !== '0' && data.budget_ok === 'yes';
-    var btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = 'Sending...';
+    var data = { name:name, email:email, phone:phone, licensed_states:'', owner:owner(), team_size:'',
+      loans_per_month:'', budget_ok:'', consent:true, page:location.href, submitted_at:new Date().toISOString(),
+      website:web, form:form.getAttribute('data-loc') };
+    data.qualified = data.owner === 'yes';
+    data.submission_id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    btn.disabled = true; btn.textContent = 'Sending...';
     function finish(){
       // Every lead goes to the thank-you page (fires the Lead event).
-      var dest = 'thank-you/';
-      var q = '?sid=' + encodeURIComponent(data.submission_id) + '&n=' + encodeURIComponent(data.name.split(' ')[0]);
-      location.href = dest + q;
+      location.href = 'thank-you/?sid=' + encodeURIComponent(data.submission_id) + '&n=' + encodeURIComponent(data.name.split(' ')[0]);
     }
-    data.submission_id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     if (!CONFIG.FORM_WEBHOOK_URL) { console.log('Form data (no webhook set):', data); finish(); return; }
-    if (navigator.onLine === false) { btn.disabled = false; btn.textContent = 'See if I qualify'; err.textContent = 'You seem to be offline. Check your internet and try again.'; return; }
+    if (navigator.onLine === false) { btn.disabled = false; btn.textContent = label; err.textContent = 'You seem to be offline. Check your internet and try again.'; return; }
     var body = JSON.stringify(data), done = false;
     function go(){ if (!done) { done = true; finish(); } }
-    // 1. Hand the lead to the browser's background sender. It keeps sending even after the page changes,
-    //    so we never wait for Google's reply.
+    // 1. Hand the lead to the browser's background sender. It keeps sending even after the page changes.
     var queued = false;
-    try { queued = !!(navigator.sendBeacon && navigator.sendBeacon(CONFIG.FORM_WEBHOOK_URL, new Blob([body], {type:'text/plain;charset=utf-8'}))); } catch(e) {}
+    try { queued = !!(navigator.sendBeacon && navigator.sendBeacon(CONFIG.FORM_WEBHOOK_URL, new Blob([body], {type:'text/plain;charset=utf-8'}))); } catch(e2) {}
     if (queued) { setTimeout(go, 400); }
     else {
       // 2. Older browsers: normal send that also survives the page change
-      fetch(CONFIG.FORM_WEBHOOK_URL, {method:'POST', mode:'no-cors', keepalive:true, headers:{'Content-Type':'text/plain;charset=utf-8'}, body:body})
-        .then(go, go);
-      setTimeout(go, 2500); // never wait longer than 2.5 seconds
+      fetch(CONFIG.FORM_WEBHOOK_URL, {method:'POST', mode:'no-cors', keepalive:true, headers:{'Content-Type':'text/plain;charset=utf-8'}, body:body}).then(go, go);
+      setTimeout(go, 2500);
     }
   });
-})();
+});
 </script>
 </body>
 </html>
