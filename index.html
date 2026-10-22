@@ -213,8 +213,10 @@ legend .hint{display:block;font-weight:400;font-size:14px;color:var(--muted);mar
 .hero-form{background:var(--ink);color:var(--white);border-radius:16px;padding:20px 14px 16px;margin:6px 0 20px;box-shadow:0 0 0 3px var(--lime),0 18px 40px rgba(16,18,31,.18)}
 .hf-tag{display:inline-block;background:var(--lime);color:var(--ink);font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase;border-radius:20px;padding:4px 12px;margin:0 0 10px}
 .hf-title{font-size:26px;line-height:1.12;margin:0 0 10px;color:var(--white)}
-.hf-title{font-size:clamp(24px,6.6vw,30px)}
+.hf-title{font-size:clamp(23px,6.4vw,29px)}
 .hf-title .hl{color:var(--lime)}
+.hf-title{text-wrap:balance}
+.hf-title .hl{white-space:normal}
 .hero-form .card{padding-bottom:12px}
 .qstep1 .err:empty{display:none}
 .vid-lead{font-family:var(--display);font-stretch:110%;font-weight:850;font-size:18px;margin:0 0 10px}
@@ -279,7 +281,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="hero">
   <div class="hero-form" id="start">
     <p class="hf-tag">Small brokers only</p>
-    <h1 class="hf-title">Small mortgage brokers: want <span class="hl">20+ home buyer and refinance appointments</span> in 30 days, on top of your referrals?</h1>
+    <h1 class="hf-title">Small mortgage brokers: want <span class="hl">20+ home buyer and refinance appointments</span> in&nbsp;30&nbsp;days, on top of your&nbsp;referrals?</h1>
     <p class="hf-sub">Answer 1 question and I'll call you personally to see if we're a fit.</p>
     <div class="card">
     <form class="qform" data-loc="hero" novalidate>
@@ -688,6 +690,30 @@ var CONFIG = {
 })();
 
 /* Two-step form */
+/* Headline: never leave a single word alone on a line. Shrinks the text a little until every line has 2+ words. */
+(function(){
+  var el = document.querySelector('.hf-title'); if (!el) return;
+  function lines(){
+    var r = document.createRange(), rows = {}, walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), n;
+    while ((n = walk.nextNode())) {
+      var re = /[^\s\u00a0]+/g, m;
+      while ((m = re.exec(n.data))) { r.setStart(n, m.index); r.setEnd(n, m.index + m[0].length);
+        var t = Math.round(r.getBoundingClientRect().top); rows[t] = (rows[t] || 0) + 1; }
+    }
+    return Object.keys(rows).map(function(k){ return rows[k]; });
+  }
+  function fit(){
+    el.style.fontSize = '';
+    var size = parseFloat(getComputedStyle(el).fontSize);
+    for (var i = 0; i < 12 && lines().some(function(c){ return c < 2; }) && size > 16; i++) {
+      size -= 1; el.style.fontSize = size + 'px';
+    }
+  }
+  fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  var t; window.addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(fit, 150); });
+})();
+
 /* Lead forms (hero + bottom): same checks, same sending, same thank-you page */
 document.querySelectorAll('.qform').forEach(function(form){
   var s1 = form.querySelector('.qstep1'), s2 = form.querySelector('.qstep2');
