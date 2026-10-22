@@ -22,7 +22,15 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '358881540016675');
+var LEAD = null;
+try {
+  var _sid = new URLSearchParams(location.search).get('sid');
+  var _ud = JSON.parse(sessionStorage.getItem('lead_ud') || 'null');
+  if (_ud && _sid && _ud.sid === _sid) LEAD = _ud;
+} catch (e) {}
+// Advanced matching: Meta encrypts these before sending, and matches more leads to real people
+if (LEAD) fbq('init', '358881540016675', { em: LEAD.em, ph: LEAD.ph, fn: LEAD.fn, ln: LEAD.ln, external_id: LEAD.sid });
+else fbq('init', '358881540016675');
 fbq('track', 'PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none"
@@ -91,7 +99,10 @@ if (sid && window.fbq) {
   var key = 'lead_' + sid, done = false;
   try { done = sessionStorage.getItem(key) === '1'; } catch (e) {}
   if (!done) {
-    fbq('track', 'Lead', {content_name: 'Mortgage broker qualify form'}, {eventID: sid});
+    fbq('track', 'Lead', { content_name: 'Mortgage broker form', content_category: LEAD ? LEAD.form : '', owner: LEAD ? LEAD.owner : '' }, { eventID: sid });
+    // Same lead ID for Google Tag Manager, so a server copy of this lead can be matched to the browser one
+    window.dataLayer = window.dataLayer || [];
+    dataLayer.push({ event: 'lead_submitted', event_id: sid, lead_form: LEAD ? LEAD.form : '', lead_owner: LEAD ? LEAD.owner : '' });
     try { sessionStorage.setItem(key, '1'); } catch (e) {}
   }
 }

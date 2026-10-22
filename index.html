@@ -686,6 +686,7 @@ document.querySelectorAll('.qform').forEach(function(form){
   form.querySelectorAll('input[name="owner"]').forEach(function(r){
     r.addEventListener('change', function(){
       q('.e1').textContent = '';
+      if (!form.dataset.started) { form.dataset.started = '1'; if (window.fbq) fbq('trackCustom', 'FormStart', { form: form.getAttribute('data-loc'), owner: owner() }); }
       title.textContent = owner() === 'yes' ? "Great. Where should I call you?" : "No problem. Where should I call you?";
       setTimeout(function(){ setStep(2); q('.f-name').focus({preventScroll:true}); }, 180);
     });
@@ -708,6 +709,13 @@ document.querySelectorAll('.qform').forEach(function(form){
     data.qualified = data.owner === 'yes';
     data.submission_id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     btn.disabled = true; btn.textContent = 'Sending...';
+    // Save the details the thank-you page needs for accurate Meta tracking (stays in this browser tab only)
+    try {
+      var digits = phone.replace(/\D/g, ''); if (digits.length === 10) digits = '1' + digits;
+      var parts = name.toLowerCase().split(/\s+/);
+      sessionStorage.setItem('lead_ud', JSON.stringify({ sid: data.submission_id, em: email.toLowerCase(), ph: digits,
+        fn: parts[0] || '', ln: parts.length > 1 ? parts[parts.length - 1] : '', form: data.form, owner: data.owner }));
+    } catch (e3) {}
     function finish(){
       // Every lead goes to the thank-you page (fires the Lead event).
       location.href = 'thank-you/?sid=' + encodeURIComponent(data.submission_id) + '&n=' + encodeURIComponent(data.name.split(' ')[0]);
