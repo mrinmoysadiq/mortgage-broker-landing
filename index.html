@@ -72,7 +72,7 @@ p{margin:0 0 12px}
 
 /* Video */
 .video{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:var(--ink);border:3px solid var(--ink);margin-bottom:18px}
-.video #playBtn{all:unset;cursor:pointer;position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--white);
+.video #playBtn{all:unset;cursor:pointer;position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--white);
  background:radial-gradient(circle at 50% 45%,#2A2E42 0%,#10121F 70%)}
 .video #playBtn:focus-visible{outline:3px solid var(--lime);outline-offset:-6px}
 .play{width:68px;height:68px;border-radius:50%;background:var(--lime);display:grid;place-items:center;box-shadow:0 0 0 8px rgba(176,244,17,.18)}
@@ -508,18 +508,22 @@ var CONFIG = {
 };
 /* ================================== */
 
-/* Video: loads only when tapped */
+/* Video: never plays on its own. Plays only when the visitor taps it */
 (function(){
   var box = document.getElementById('video'), poster = document.getElementById('playBtn');
   if (!CONFIG.YOUTUBE_ID) return;
-  var player = null, ready = false, muted = false, soundBtn = null, userPaused = false, started = false, inView = false, autoPaused = false;
+  var player = null, ready = false, wantPlay = false, started = false, soundBtn = null, userPaused = false, inView = true, autoPaused = false;
 
   function speed(){ try { player.setPlaybackRate(CONFIG.VIDEO_SPEED); } catch(e){} }
-  // The video already has subtitles burned in, so switch off YouTube's own captions
+  // The video already has subtitles in it, so switch off YouTube's own captions (again a few times, as YouTube loads them late)
   function noCaptions(){
-    try { player.setOption('captions', 'track', {}); } catch(e){}
-    try { player.unloadModule('captions'); } catch(e){}
-    try { player.unloadModule('cc'); } catch(e){}
+    [0, 300, 1000, 2500].forEach(function(t){
+      setTimeout(function(){
+        try { player.setOption('captions', 'track', {}); } catch(e){}
+        try { player.unloadModule('captions'); } catch(e){}
+        try { player.unloadModule('cc'); } catch(e){}
+      }, t);
+    });
   }
   function hideSound(){ if (soundBtn) { soundBtn.remove(); soundBtn = null; } }
   function showSound(){
@@ -528,34 +532,29 @@ var CONFIG = {
     soundBtn.type = 'button'; soundBtn.className = 'sound-on';
     soundBtn.innerHTML = '<span class="spk" aria-hidden="true"></span>Tap for sound';
     soundBtn.addEventListener('click', function(){
-      muted = false; hideSound();
-      player.unMute(); player.setVolume(100); player.seekTo(0, true); player.playVideo(); speed(); noCaptions();
+      hideSound(); player.unMute(); player.setVolume(100); player.seekTo(0, true); player.playVideo(); speed(); noCaptions();
     });
     box.appendChild(soundBtn);
   }
 
-  // First play: try with sound. If the browser blocks sound, play muted and show "Tap for sound"
-  function firstPlay(){
-    if (started) return; started = true;
-    player.unMute(); player.setVolume(100); player.playVideo(); speed();
+  // Runs only after a tap. Plays with sound. If the phone blocks sound, plays muted and shows "Tap for sound"
+  function playNow(){
+    started = true; poster.style.display = 'none';
+    player.unMute(); player.setVolume(100); player.playVideo(); speed(); noCaptions();
     setTimeout(function(){
       var st = player.getPlayerState();
-      if (st !== YT.PlayerState.PLAYING && st !== YT.PlayerState.BUFFERING) {
-        muted = true; player.mute(); player.playVideo(); speed(); showSound();
-      } else if (player.isMuted()) { muted = true; showSound(); }
-    }, 1200);
+      if (st !== YT.PlayerState.PLAYING && st !== YT.PlayerState.BUFFERING) { player.mute(); player.playVideo(); speed(); showSound(); }
+      else if (player.isMuted()) showSound();
+    }, 1500);
   }
 
-  function start(){
+  function build(){
     box.insertAdjacentHTML('beforeend', '<div id="ytPlayer"></div>');
     player = new YT.Player('ytPlayer', {
       videoId: CONFIG.YOUTUBE_ID, width: '100%', height: '100%',
-      playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1, cc_load_policy: 0, iv_load_policy: 3, hl: 'en', cc_lang_pref: 'none' },
+      playerVars: { autoplay: 0, playsinline: 1, rel: 0, modestbranding: 1, cc_load_policy: 0, iv_load_policy: 3, hl: 'en', cc_lang_pref: 'none' },
       events: {
-        onReady: function(){
-          ready = true; poster.style.display = 'none'; noCaptions();
-          if (inView) firstPlay();
-        },
+        onReady: function(){ ready = true; noCaptions(); if (wantPlay) playNow(); },
         onStateChange: function(e){
           if (e.data === YT.PlayerState.PLAYING) { speed(); noCaptions(); userPaused = false; }
           if (e.data === YT.PlayerState.PAUSED) { if (autoPaused) autoPaused = false; else if (inView) userPaused = true; }
@@ -565,29 +564,27 @@ var CONFIG = {
     });
   }
 
-  // Tapping the cover (before the player is ready) starts it with sound
+  // The cover image stays on top until the visitor taps it
   poster.addEventListener('click', function(){
-    inView = true;
-    if (ready) { started = true; player.unMute(); player.setVolume(100); player.playVideo(); speed(); hideSound(); }
+    if (ready) playNow(); else wantPlay = true;
   });
 
-  // Start when the video comes into view, pause when it leaves, resume when they scroll back
+  // After they have started it: pause when scrolled away, carry on when they come back (unless they paused it)
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function(entries){
       entries.forEach(function(en){
         inView = en.intersectionRatio >= 0.5;
-        if (!ready) return;
+        if (!ready || !started) return;
         if (inView) {
-          if (!started) firstPlay();
-          else if (!userPaused && player.getPlayerState() === YT.PlayerState.PAUSED) { player.playVideo(); speed(); }
+          if (!userPaused && player.getPlayerState() === YT.PlayerState.PAUSED) { player.playVideo(); speed(); }
         } else if (en.intersectionRatio < 0.3 && player.getPlayerState() === YT.PlayerState.PLAYING) {
           autoPaused = true; player.pauseVideo();
         }
       });
     }, { threshold: [0, 0.3, 0.5, 0.8] }).observe(box);
-  } else { inView = true; }
+  }
 
-  window.onYouTubeIframeAPIReady = start;
+  window.onYouTubeIframeAPIReady = build;
   var s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(s);
 })();
 
