@@ -584,8 +584,16 @@ var CONFIG = {
     }, { threshold: [0, 0.3, 0.5, 0.8] }).observe(box);
   }
 
-  window.onYouTubeIframeAPIReady = build;
-  var s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(s);
+  // Load YouTube only after the page itself has finished loading (or on the first tap), so the page shows faster
+  var loaded = false;
+  function loadYT(){
+    if (loaded) return; loaded = true;
+    window.onYouTubeIframeAPIReady = build;
+    var s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(s);
+  }
+  poster.addEventListener('click', loadYT);
+  if (document.readyState === 'complete') setTimeout(loadYT, 800);
+  else window.addEventListener('load', function(){ setTimeout(loadYT, 800); });
 })();
 
 /* Chat: page holds still while the chat scrolls past, then the page moves on */
