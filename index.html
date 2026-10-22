@@ -44,7 +44,6 @@ src="https://www.facebook.com/tr?id=358881540016675&ev=PageView&noscript=1"
 :root{--ink:#10121F;--ink-2:#2A2E42;--muted:#5B6072;--paper:#F4F4F1;--white:#fff;--lime:#B0F411;--line:#E3E1DA;
 --display:"Archivo",Arial,sans-serif;--body:"Source Sans 3",Arial,sans-serif}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:var(--white);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased}
 .page{text-align:center;padding-bottom:84px;--gut:max(20px,calc((100% - 440px) / 2))}
@@ -573,6 +572,29 @@ var CONFIG = {
   window.addEventListener('resize', layout);
   if (img.complete) layout(); else img.addEventListener('load', layout);
   layout();
+})();
+
+/* "Check if I qualify" buttons: always land on the form, even if images above are still loading */
+(function(){
+  var target = document.getElementById('apply');
+  if (!target) return;
+  function pos(){ return target.getBoundingClientRect().top + window.pageYOffset; }
+  function goForm(e){
+    if (e) e.preventDefault();
+    var jumps = 0, last = -1;
+    function fix(){
+      var y = pos();
+      if (Math.abs(y - window.pageYOffset) > 4) window.scrollTo(0, y);
+      jumps++;
+      // Keep checking for a short time: lazy images and the video can push the form down after the first jump
+      if (jumps < 25 && (jumps < 6 || y !== last)) { last = y; setTimeout(fix, 120); }
+    }
+    window.scrollTo(0, pos()); setTimeout(fix, 80);
+    if (history.replaceState) history.replaceState(null, '', '#apply');
+  }
+  document.querySelectorAll('a[href="#apply"]').forEach(function(a){ a.addEventListener('click', goForm); });
+  // Ad links that open the page with #apply in the address
+  if (location.hash === '#apply') window.addEventListener('load', function(){ goForm(); });
 })();
 
 /* Tap a screenshot to see it full size */
