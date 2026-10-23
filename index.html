@@ -37,7 +37,6 @@ src="https://www.facebook.com/tr?id=358881540016675&ev=PageView&noscript=1"
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "z05q6i7hzg");
 </script>
-<link rel="preload" as="image" href="img/vsl-poster.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -312,11 +311,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <p class="sub">We run the Facebook ads and our AI books the calls on your calendar, for just <b>$697/month</b>. No contract. If you don't get 20+ booked appointments in 30 days, <b>we work for free</b>.</p>
 
-  <p class="vid-lead">Watch: real numbers from real broker accounts</p>
-  <div class="video" id="video">
-    <button type="button" id="playBtn" class="poster" aria-label="Play video: 57 booked appointments in 30 days, real account, real numbers"></button>
-  </div>
-
   <div class="fitbox">
     <p class="fit-title">Built for you if you:</p>
     <ul class="list ok fit">
@@ -422,30 +416,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </ul>
 </section>
 
-<!-- FOUNDER + TEAM -->
-<section class="sec alt founder" id="team">
-  <p class="kicker">Who runs your ads</p>
-  <h2>How we charge $697 when US agencies charge $2,000+</h2>
-  <div class="fhead">
-    <img src="img/founder.webp" alt="Mrinmoy Sadiq, founder of Infinix Online" width="96" height="96">
-    <p><b>Hi, I'm Mrinmoy Sadiq,</b> founder of Infinix Online.</p>
-  </div>
-  <p class="fintro">We are a <b>UK registered company</b> with a full-time team in <b>Dhaka, Bangladesh</b>. We work <b>only with small mortgage brokers in the USA</b>. No other industries, no big lenders.</p>
-  <ul class="list ok how">
-    <li><b>Lower cost, not lower skill.</b> A senior media buyer costs far less in Dhaka than in Dallas. You pay for the work, not for a US office and US salaries.</li>
-    <li><b>The same tools US agencies use.</b> Meta Ads, GoHighLevel, AI texting and full tracking. Only the bill is different.</li>
-    <li><b>Built for brokers, ready on day one.</b> The ads, AI scripts and follow-up are already built and tested on real mortgage accounts. We don't learn on your money.</li>
-    <li><b>No sales team, no account managers.</b> You talk directly to the people who run your ads.</li>
-  </ul>
-  <div class="clock">
-    <p class="clock-t">We work while you sleep</p>
-    <p>Dhaka is 10 to 11 hours ahead of the US East Coast. While you sleep, we check your ads and fix what isn't working. And your AI assistant texts new leads day and night.</p>
-  </div>
-  <img class="team" src="img/team.webp" width="1080" height="910" alt="Infinix Online team in Dhaka: Mahir M. Nahi, Shadman B. Utsash, Golam M. Arian, Ankur Biswas, Mohiuddin and Labiba Ibnat" loading="lazy">
-  <p class="cap">The team behind your leads, in Dhaka, Bangladesh.</p>
-  <div class="chips"><span>UK registered company</span><span>Top Rated Plus, Upwork</span><span>96% job success</span><span>$2M+ ad spend managed</span><span>GHL Certified</span></div>
-  <p class="reg">Infinix Online Ltd, registered in England. Suite A, 82 James Carter Road, Mildenhall, Bury St. Edmunds, IP28 7DE.</p>
-</section>
+
 
 <!-- FAQ -->
 <section class="sec">
@@ -508,93 +479,6 @@ var CONFIG = {
   FORM_WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbwNZOZo2c1FMkmovtowWu8FyvPVBMKOizXQPEzRZZDr6WKFGLJhyHfcuSZ9Kr-barqLyQ/exec"
 };
 /* ================================== */
-
-/* Video: never plays on its own. Plays only when the visitor taps it */
-(function(){
-  var box = document.getElementById('video'), poster = document.getElementById('playBtn');
-  if (!CONFIG.YOUTUBE_ID) return;
-  var player = null, ready = false, wantPlay = false, started = false, soundBtn = null, userPaused = false, inView = true, autoPaused = false;
-
-  function speed(){ try { player.setPlaybackRate(CONFIG.VIDEO_SPEED); } catch(e){} }
-  // The video already has subtitles in it, so switch off YouTube's own captions (again a few times, as YouTube loads them late)
-  function noCaptions(){
-    [0, 300, 1000, 2500].forEach(function(t){
-      setTimeout(function(){
-        try { player.setOption('captions', 'track', {}); } catch(e){}
-        try { player.unloadModule('captions'); } catch(e){}
-        try { player.unloadModule('cc'); } catch(e){}
-      }, t);
-    });
-  }
-  function hideSound(){ if (soundBtn) { soundBtn.remove(); soundBtn = null; } }
-  function showSound(){
-    if (soundBtn) return;
-    soundBtn = document.createElement('button');
-    soundBtn.type = 'button'; soundBtn.className = 'sound-on';
-    soundBtn.innerHTML = '<span class="spk" aria-hidden="true"></span>Tap for sound';
-    soundBtn.addEventListener('click', function(){
-      hideSound(); player.unMute(); player.setVolume(100); player.seekTo(0, true); player.playVideo(); speed(); noCaptions();
-    });
-    box.appendChild(soundBtn);
-  }
-
-  // Runs only after a tap. Plays with sound. If the phone blocks sound, plays muted and shows "Tap for sound"
-  function playNow(){
-    started = true; poster.style.display = 'none';
-    player.unMute(); player.setVolume(100); player.playVideo(); speed(); noCaptions();
-    setTimeout(function(){
-      var st = player.getPlayerState();
-      if (st !== YT.PlayerState.PLAYING && st !== YT.PlayerState.BUFFERING) { player.mute(); player.playVideo(); speed(); showSound(); }
-      else if (player.isMuted()) showSound();
-    }, 1500);
-  }
-
-  function build(){
-    box.insertAdjacentHTML('beforeend', '<div id="ytPlayer"></div>');
-    player = new YT.Player('ytPlayer', {
-      videoId: CONFIG.YOUTUBE_ID, width: '100%', height: '100%',
-      playerVars: { autoplay: 0, playsinline: 1, rel: 0, modestbranding: 1, cc_load_policy: 0, iv_load_policy: 3, hl: 'en', cc_lang_pref: 'none' },
-      events: {
-        onReady: function(){ ready = true; noCaptions(); if (wantPlay) playNow(); },
-        onStateChange: function(e){
-          if (e.data === YT.PlayerState.PLAYING) { speed(); noCaptions(); userPaused = false; }
-          if (e.data === YT.PlayerState.PAUSED) { if (autoPaused) autoPaused = false; else if (inView) userPaused = true; }
-          if (e.data === YT.PlayerState.ENDED && window.fbq) fbq('trackCustom', 'VSLComplete');
-        }
-      }
-    });
-  }
-
-  // The cover image stays on top until the visitor taps it
-  poster.addEventListener('click', function(){
-    if (ready) playNow(); else { wantPlay = true; poster.style.opacity = '.75'; poster.style.cursor = 'progress'; }
-  });
-
-  // After they have started it: pause when scrolled away, carry on when they come back (unless they paused it)
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function(entries){
-      entries.forEach(function(en){
-        inView = en.intersectionRatio >= 0.5;
-        if (!ready || !started) return;
-        if (inView) {
-          if (!userPaused && player.getPlayerState() === YT.PlayerState.PAUSED) { player.playVideo(); speed(); }
-        } else if (en.intersectionRatio < 0.3 && player.getPlayerState() === YT.PlayerState.PLAYING) {
-          autoPaused = true; player.pauseVideo();
-        }
-      });
-    }, { threshold: [0, 0.3, 0.5, 0.8] }).observe(box);
-  }
-
-  // YouTube is heavy (over 1 MB), so it loads only when the visitor taps the video. This keeps the page fast.
-  var loaded = false;
-  function loadYT(){
-    if (loaded) return; loaded = true;
-    window.onYouTubeIframeAPIReady = build;
-    var s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(s);
-  }
-  poster.addEventListener('pointerdown', loadYT);
-  poster.addEventListener('click', loadYT);
-})();
 
 /* Once the page has loaded, fetch the lower images in the background so they are ready before the visitor scrolls to them */
 (function(){
