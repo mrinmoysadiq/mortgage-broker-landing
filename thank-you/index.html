@@ -12,38 +12,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Thank you | Infinix Online</title>
-<!-- Meta Pixel Code -->
 <script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
+// Lead details saved by the form (used for the GTM lead event below)
 var LEAD = null;
 try {
   var _sid = new URLSearchParams(location.search).get('sid');
   var _ud = JSON.parse(sessionStorage.getItem('lead_ud') || 'null');
   if (_ud && _sid && _ud.sid === _sid) LEAD = _ud;
 } catch (e) {}
-// Advanced matching: Meta encrypts these before sending, and matches more leads to real people
-if (LEAD) fbq('init', '358881540016675', { em: LEAD.em, ph: LEAD.ph, fn: LEAD.fn, ln: LEAD.ln, external_id: LEAD.sid });
-else fbq('init', '358881540016675');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=358881540016675&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
-<!-- Microsoft Clarity -->
-<script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "z05q6i7hzg");
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -159,16 +135,20 @@ var P = new URLSearchParams(location.search);
 var first = (P.get('n') || '').replace(/[^\p{L} '\-]/gu, '').slice(0, 30);
 if (first) document.getElementById('hi').textContent = 'Thanks, ' + first + "! You're in.";
 
-// Meta Lead event: fires once per submission (not again on page refresh)
+// GTM lead event: fires once per submission (not again on page refresh). Use "lead_submitted" as the trigger in GTM.
 var sid = P.get('sid');
-if (sid && window.fbq) {
+if (sid) {
   var key = 'lead_' + sid, done = false;
   try { done = sessionStorage.getItem(key) === '1'; } catch (e) {}
   if (!done) {
-    fbq('track', 'Lead', { content_name: 'Mortgage broker form', content_category: LEAD ? LEAD.form : '', owner: LEAD ? LEAD.owner : '' }, { eventID: sid });
-    // Same lead ID for Google Tag Manager, so a server copy of this lead can be matched to the browser one
     window.dataLayer = window.dataLayer || [];
-    dataLayer.push({ event: 'lead_submitted', event_id: sid, lead_form: LEAD ? LEAD.form : '', lead_owner: LEAD ? LEAD.owner : '' });
+    dataLayer.push({
+      event: 'lead_submitted',
+      event_id: sid,
+      lead_form: LEAD ? LEAD.form : '',
+      lead_owner: LEAD ? LEAD.owner : '',
+      user_data: LEAD ? { email: LEAD.em, phone: LEAD.ph, first_name: LEAD.fn, last_name: LEAD.ln } : {}
+    });
     try { sessionStorage.setItem(key, '1'); } catch (e) {}
   }
 }
@@ -232,7 +212,7 @@ var CONFIG = { YOUTUBE_ID: "QUInr90JLKo", VIDEO_SPEED: 1.5 };
         onStateChange: function(e){
           if (e.data === YT.PlayerState.PLAYING) { speed(); noCaptions(); userPaused = false; }
           if (e.data === YT.PlayerState.PAUSED) { if (autoPaused) autoPaused = false; else if (inView) userPaused = true; }
-          if (e.data === YT.PlayerState.ENDED && window.fbq) fbq('trackCustom', 'VSLComplete');
+          if (e.data === YT.PlayerState.ENDED) { window.dataLayer = window.dataLayer || []; dataLayer.push({ event: 'vsl_complete' }); }
         }
       }
     });
